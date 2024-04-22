@@ -15,12 +15,14 @@ import {
   MachineImage,
   AmazonLinuxCpuType,
 } from 'aws-cdk-lib/aws-ec2';
+import { Repository } from 'aws-cdk-lib/aws-ecr';
 import {
   Role,
   ServicePrincipal,
   ManagedPolicy,
   PolicyDocument,
   PolicyStatement,
+  Effect,
 } from 'aws-cdk-lib/aws-iam';
 import { Bucket, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
 import { Source, BucketDeployment } from 'aws-cdk-lib/aws-s3-deployment';
@@ -65,6 +67,14 @@ export class ServerResources extends Construct {
       memoryLimit: 512,
     });
 
+    const ecrRepositoryUri = process.env.ECR_REPO_URI || 'default_uri_value';
+
+    // Extract the repository name from the full ECR repository URI
+    const repositoryName = ecrRepositoryUri.split('/').pop()!;
+
+    // Get a reference to the existing ECR repository
+    const ecrRepository = Repository.fromRepositoryName(this, 'ECRRepo', repositoryName);
+
     // Create a role for the EC2 instance to assume.  This role will allow the instance to put log events to CloudWatch Logs
     const serverRole = new Role(this, 'serverEc2Role', {
       assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
@@ -83,6 +93,34 @@ export class ServerResources extends Construct {
         ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentServerPolicy'),
       ],
     });
+
+    // Add the necessary ECR permissions to the EC2 instance's role
+    serverRole.addToPolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: [
+        'ecr:GetAuthorizationToken',
+      ],
+      resources: ['*'], // Allow ecr:GetAuthorizationToken on all resources
+    }));
+
+    serverRole.addToPolicy(new PolicyStatement({
+      effect: Effect.ALLOW,
+      actions: [
+        'ecr:GetAuthorizationToken',
+        'ecr:BatchCheckLayerAvailability',
+        'ecr:GetDownloadUrlForLayer',
+        'ecr:GetRepositoryPolicy',
+        'ecr:DescribeRepositories',
+        'ecr:ListImages',
+        'ecr:DescribeImages',
+        'ecr:BatchGetImage',
+        'ecr:InitiateLayerUpload',
+        'ecr:UploadLayerPart',
+        'ecr:CompleteLayerUpload',
+        'ecr:PutImage',
+      ],
+      resources: [ecrRepository.repositoryArn],
+    }));
 
     // Grant the EC2 role access to the bucket
     assetBucket.grantReadWrite(serverRole);
