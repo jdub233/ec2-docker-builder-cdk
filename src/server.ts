@@ -118,6 +118,10 @@ export class ServerResources extends Construct {
 
     // Determine the correct InstanceSize based on the props passed in
     switch (props.instanceSize) {
+      case 'medium':
+        instanceClass = InstanceClass.T3;
+        instanceSize = InstanceSize.MEDIUM;
+        break;
       case 'large':
         instanceSize = InstanceSize.LARGE;
         break;
