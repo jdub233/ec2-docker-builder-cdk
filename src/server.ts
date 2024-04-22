@@ -94,7 +94,7 @@ export class ServerResources extends Construct {
       'yum update -y',
       'curl -sL https://dl.yarnpkg.com/rpm/yarn.repo | sudo tee /etc/yum.repos.d/yarn.repo',
       'curl -sL https://rpm.nodesource.com/setup_18.x | sudo -E bash - ',
-      'yum install -y amazon-cloudwatch-agent nodejs python3-pip zip unzip docker yarn',
+      'yum install -y amazon-cloudwatch-agent nodejs python3-pip zip unzip docker yarn git',
       'sudo systemctl enable docker',
       'sudo systemctl start docker',
       'mkdir -p /home/ec2-user/sample',
