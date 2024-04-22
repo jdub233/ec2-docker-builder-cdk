@@ -97,6 +97,7 @@ export class ServerResources extends Construct {
       'yum install -y amazon-cloudwatch-agent nodejs python3-pip zip unzip docker yarn git',
       'sudo systemctl enable docker',
       'sudo systemctl start docker',
+      'sudo usermod -a -G docker ec2-user',
       'mkdir -p /home/ec2-user/sample',
       'aws s3 cp s3://' +
         assetBucket.bucketName +
