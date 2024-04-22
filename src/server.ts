@@ -25,6 +25,9 @@ import {
 import { Bucket, ObjectOwnership } from 'aws-cdk-lib/aws-s3';
 import { Source, BucketDeployment } from 'aws-cdk-lib/aws-s3-deployment';
 import { Construct } from 'constructs';
+import { config } from 'dotenv';
+
+config();
 
 interface ServerProps {
   vpc: Vpc;
