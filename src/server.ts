@@ -14,6 +14,7 @@ import {
   UserData,
   MachineImage,
   AmazonLinuxCpuType,
+  BlockDeviceVolume,
 } from 'aws-cdk-lib/aws-ec2';
 import { Repository } from 'aws-cdk-lib/aws-ecr';
 import {
@@ -188,6 +189,12 @@ export class ServerResources extends Construct {
         cachedInContext: false,
         cpuType: cpuType,
       }),
+      blockDevices: [
+        {
+          deviceName: '/dev/xvda',
+          volume: BlockDeviceVolume.ebs(20), // 20GB for data volume
+        },
+      ],
       userData: userData,
       securityGroup: ec2InstanceSecurityGroup,
       init: CloudFormationInit.fromConfigSets({
