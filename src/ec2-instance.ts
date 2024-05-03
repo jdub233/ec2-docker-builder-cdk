@@ -62,7 +62,7 @@ const stackProps = {
 
 const app = new App();
 
-new EC2Example(app, 'EC2Example', {
+new EC2Example(app, 'EC2DockerBuilder', {
   ...stackProps,
   env: devEnv,
 });
